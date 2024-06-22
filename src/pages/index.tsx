@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import Question from '@/components/Question';
 import Answer from '@/components/Answer';
+import Button from '@/components/Button';
 import AnswerModel from '@/model/answer';
 import QuestionModel from '@/model/question';
 
@@ -34,6 +35,7 @@ export default function Home() {
       alignItems: 'center',
       display: 'flex',
       height: '100vh',
+      flexDirection: 'column',
       justifyContent: 'center'
     }}>
       <Question 
@@ -41,6 +43,10 @@ export default function Home() {
         givenAnswer={ givenAnswer }
         runout={ runout }
         timeToAnswer={ 20 } />
+      <Button 
+        href="/result"
+        text="Próxima"
+        style={{ marginTop: '40px' }} />
     </div>
   );
 }
