@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import Link from 'next/link';
 import styles from '@/styles/Button.module.css';
 
@@ -5,7 +6,7 @@ interface ButtonProps {
     href?: string;
     text: string;
     onClick?: (e: any) => void;
-    style?: string;
+    style?: CSSProperties;
 }
 
 export default function Button(props: ButtonProps) {

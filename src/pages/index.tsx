@@ -1,52 +1,76 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
-import Question from '@/components/Question';
-import Answer from '@/components/Answer';
-import Button from '@/components/Button';
 import AnswerModel from '@/model/answer';
 import QuestionModel from '@/model/question';
+import Questionnaire from '@/components/Questionnaire';
 
-const testing = new QuestionModel(
-  1, 
-  'Mehor cor?',
-  [
-    AnswerModel.wrong('Verde'),
-    AnswerModel.wrong('Vermelho'),
-    AnswerModel.wrong('Azul'),
-    AnswerModel.right('Branco'),
-  ]
-);
+const BASE_URL = 'http://localhost:3000/api'
 
 export default function Home() {
-  const [question, setQuestion] = useState(testing);
+  const router = useRouter();
+  const [question, setQuestion] = useState<QuestionModel>();
+  const [questionIds, setQuestionIds] = useState<number[]>([]);
+  const [rightAsnwers, setRightAsnwers] = useState<number>(0);
 
-  function givenAnswer(index: number) {
-    setQuestion(question.answerWith(index));
+  async function loadQuestionsId() {
+    const response = await fetch(`${BASE_URL}/questionnaire`);
+    const questionIds = await response.json();
+    setQuestionIds(questionIds);
   }
 
-  function runout() {
-    if (question.notAnswered) {
-      setQuestion(question.answerWith(-1));
-    }
+  async function loadQuestion(id: number) {
+    const response = await fetch(`${BASE_URL}/questions/${id}`);
+    const json = await response.json();
+    const newQuestion = QuestionModel.createUsingObj(json);
+    setQuestion(newQuestion);
+  }
+
+  useEffect(() => {
+    loadQuestionsId();
+  }, []);
+
+  useEffect(() => {
+    questionIds.length > 0 && loadQuestion(questionIds[0]);
+  }, [questionIds]);
+
+  function answeredQuestion(question: QuestionModel) {
+    const right = question.right;
+    setQuestion(question);
+    setRightAsnwers(rightAsnwers + (right ? 1 : 0));
+  }
+
+  function getNextQuestionId() {
+    if (!question) { return undefined; }
+    const nextIndex = questionIds.indexOf(question.id) + 1;
+    return questionIds[nextIndex];
+  }
+
+  function nextStep() {
+    const nextId = getNextQuestionId();
+    nextId ? goNextQuestion(nextId) : finish();
+  }
+
+  function goNextQuestion(next: number) {
+    loadQuestion(next);
+  }
+
+  function finish() {
+    router.push({
+      pathname: '/result',
+      query: {
+        total: questionIds.length,
+        rights: rightAsnwers
+      }
+    });
   }
 
   return (
-    <div style={{
-      alignItems: 'center',
-      display: 'flex',
-      height: '100vh',
-      flexDirection: 'column',
-      justifyContent: 'center'
-    }}>
-      <Question 
-        value={ question } 
-        givenAnswer={ givenAnswer }
-        runout={ runout }
-        timeToAnswer={ 20 } />
-      <Button 
-        href="/result"
-        text="Próxima"
-        style={{ marginTop: '40px' }} />
-    </div>
+    <Questionnaire
+      question={ question }
+      last={ getNextQuestionId() === undefined }
+      answeredQuestion={ answeredQuestion }
+      nextStep={ nextStep }
+    />
   );
 }

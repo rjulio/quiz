@@ -1,6 +1,6 @@
 import questions from '@/pages/api/questionsDb';
 
-export default function handler(req, res) {
+export default function handler(req: any, res: any) {
   const selectedId = +req.query.id;
   const uniqueQuestionOrNothing = questions.filter((question) => question.id === selectedId);
 

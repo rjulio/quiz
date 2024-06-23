@@ -17,6 +17,10 @@ export default class AnswerModel {
 		return new AnswerModel(value, false);
 	}
 
+	static createUsingObj(obj: AnswerModel): AnswerModel {
+		return new AnswerModel(obj.value, obj.right, obj.visible);
+	}
+
 	get value() { return this.#value; }
 	get right() { return this.#right; }
 	get visible() { return this.#visible; }

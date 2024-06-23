@@ -26,7 +26,7 @@ export default function Question(props: QuestionProps) {
 		return question.answers.map((answer, i) => {
 			return (
 				<Answer 
-					key={ i }
+					key={ `${question.id}${i}` }
 					index={ i } 
 					answer={ answer }
 					option={ options[i].value }
@@ -42,7 +42,8 @@ export default function Question(props: QuestionProps) {
 			<Title text={ question.question } />
 			<Timer 
 				duration={ props.timeToAnswer ?? 10 } 
-				runout={ () => props.runout() } />
+				runout={ () => props.runout() }
+				key={ question.id } />
 			{ renderAnswers() }
 		</div>
 	);
