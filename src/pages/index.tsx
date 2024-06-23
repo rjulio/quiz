@@ -5,7 +5,7 @@ import AnswerModel from '@/model/answer';
 import QuestionModel from '@/model/question';
 import Questionnaire from '@/components/Questionnaire';
 
-const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/api`;
 
 export default function Home() {
   const router = useRouter();
